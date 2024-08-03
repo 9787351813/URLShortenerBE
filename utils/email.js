@@ -1,26 +1,30 @@
 const nodemailer = require('nodemailer');
 
-const email = async (email, resetUrl) => {
+const sendResetEmail = async (email, resetUrl) => {
+  try {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        email: 'oviyasraj2001@gmail.com',
-        pass: 'jvxgerjdgbktvdty'
+        user: 'oviyasraj2001@gmail.com', // Replace with your Gmail email
+        pass: 'ypkzmeenvumwuamu' // Replace with your Gmail password or app-specific password
       }
     });
+     // console.log(transporter);
     const mailOptions = {
       from: 'oviyasraj2001@gmail.com',
-      to:'oviyasraj2001@gmail.com',
-    subject: subject,
-    text: text
-  };
+      to: 'oviyasraj2001@gmail.com',
+      subject: "subject",
+      text: resetUrl
+      
+    };
 
-  try {
     await transporter.sendMail(mailOptions);
+    console.log('Recovery email sent');
+    return { success: true };
   } catch (error) {
     console.error('Error sending email:', error);
-    throw new Error('Failed to send email');
+    return { error: 'Error sending email' };
   }
 };
 
-module.exports = email;
+module.exports = sendResetEmail;

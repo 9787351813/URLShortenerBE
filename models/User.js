@@ -10,17 +10,9 @@ const UserSchema = new mongoose.Schema({
   resetPasswordExpires: Date
 });
 
-// Pre-save middleware to hash the password before saving
-UserSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next();
-  this.password = await bcrypt.hash(this.password, 10);
-  next();
-});
 
-// Method to compare candidate password with the hashed password
-UserSchema.methods.comparePassword = function (candidatePassword) {
-  return bcrypt.compare(candidatePassword, this.password);
-};
+
+
 
 const User = mongoose.model('User', UserSchema);
 

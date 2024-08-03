@@ -1,10 +1,12 @@
-// controllers/urlController.js
 const Url = require('../models/Url');
-const { nanoid } = require('nanoid');
 
 exports.shortenUrl = async (req, res) => {
     const { longUrl } = req.body;
+
+    // Use dynamic import for nanoid
+    const { nanoid } = await import('nanoid');
     const shortUrl = nanoid(8);
+
     const newUrl = new Url({ longUrl, shortUrl });
 
     try {
@@ -24,9 +26,9 @@ exports.redirectUrl = async (req, res) => {
         if (url) {
             url.clicks += 1;
             await url.save();
-            res.redirect(url.longUrl);
+            res.status(200).json({ shortUrl, longUrl: url.longUrl });
         } else {
-            res.status(404).json({ message: 'URL not found' });
+            throw new Error('URL not found');
         }
     } catch (error) {
         res.status(500).json({ message: 'Error redirecting URL' });
@@ -35,21 +37,19 @@ exports.redirectUrl = async (req, res) => {
 
 exports.getCounts = async (req, res) => {
     try {
-        const dailyCount = await Url.countDocuments({
-            createdAt: { $gte: new Date(new Date().setHours(0, 0, 0, 0)) }
-        });
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
-        const monthlyCount = await Url.countDocuments({
-            createdAt: {
-                $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
-            }
-        });
+        const countToday = await Url.countDocuments({ createdAt: { $gte: today } });
+        const countMonth = await Url.countDocuments({ createdAt: { $gte: startOfMonth } });
 
-        res.status(200).json({ dailyCount, monthlyCount });
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching counts' });
+        res.json({ countToday, countMonth });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 };
+
 
 exports.getAllUrls = async (req, res) => {
     try {

@@ -15,6 +15,8 @@ app.use(express.json());
 app.use(cors());
 app.use(bodyParser.json());
 
+
+
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Connected to MongoDB'))
@@ -25,9 +27,10 @@ mongoose.connect(process.env.MONGODB_URI)
 
 // Import auth routes
 const authRoutes = require('./routes/authRoutes'); // Ensure the path is correct
-
+const urlRoutes = require('./routes/urlRoutes');
 // Use auth routes
 app.use('/api/auth', authRoutes);
+app.use('/api/url', urlRoutes);
 
 app.get('/', (req, res) => {
   res.send('API is running...');
@@ -46,5 +49,11 @@ app.post('/api/login', (req, res) => {
   res.send('Login successful');
 });
 
+app.post('/api/forgot-password', (req, res) => {
+  const { email } = req.body;
+  // Implement your logic here to handle the password reset
+  console.log(`Password reset requested for email: ${email}`);
+  res.send({ message: 'Password reset link sent' });
+});
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
