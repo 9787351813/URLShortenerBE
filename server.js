@@ -15,13 +15,11 @@ app.use(express.json());
 app.use(cors());
 app.use(bodyParser.json());
 
-const mongoUri = process.env.MONGODB_URI;
+
 
 // Connect to MongoDB
-mongoose.connect(mongoUri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(() => console.log('Connected to MongoDB'))
+mongoose.connect('mongodb+srv://URLShortener:Kavisha123@cluster0.6kv8p2r.mongodb.net/URLShortener')
+.then(() => console.log('Connected to MongoDB'))
   .catch(err => {
     console.error('Could not connect to MongoDB', err); // Log connection error
     process.exit(1);
